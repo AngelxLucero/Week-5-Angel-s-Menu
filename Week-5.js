@@ -4,6 +4,16 @@
 // b.	Use at least two classes.
 // c.	Your menu should have the options to create, view, and delete elements.
 
+//The menu is a draft for creating Characters and assigning cast members for a TV Show.
+//To interact with the menu, you create Characters. You can then display all the 
+//Characters you have created, you can delete a character or view a specific character.
+//In the view section of a specific character you can assign a cast member to 
+//the selected Character. You can also delete the assigned cast member and give
+//the Character a new cast member. 
+
+
+//Assigning Cast member attributes.
+
 class CastMember{
     constructor(name, sex){
         this.name = name;
@@ -13,46 +23,41 @@ class CastMember{
         console.log(`Hi my name is ${this.name} and I am ${this.sex}`);
     }
 }
- let actress = new CastMember ("Christen Bell", "Female");
+
+//Assigning Character attributes.
 
 class Character{
-    constructor(fullname, occupation, weakness){
+    constructor(fullname, occupation){
         this.fullname = fullname;
         this.occupation = occupation;
-        this.weakness = weakness;
-    }
-    describe(){
-        console.log(`The character's name is ${this.fullname}, their occupation is ${this.occupation}, and their weekenss is ${this.weakness}`);
-    }
-}
-let char1 = new Character ("Elenor Shellstrop", "Con-Artist", "Selfishness");
-
-class Movie{
-    constructor(title, director){
-        this.title = title;
-        this.director = director;
-        this.characters = [];
         this.castmembers = [];
     }
-    addCharacter(character){
-        if(character instanceof Character){
-            this.characters.push(character);
+    addCastMember(castmembers){
+        if(castmembers instanceof CastMember){
+            this.castmembers.push(castmembers);
         } else {
-            throw new Error(`You can only add an instance of Character. Arguement is not a player; ${Character}`)
+            throw new Error(`You can only add an instance of a Cast Member. Arguement is not a castmember: ${castmembers}`)
         }
     }
     describe(){
-        return `${this.title} needs ${characters.lenght} characters`;
+        return `${this.fullname} can be played by ${this.castmembers.length}`;
     }
 }
 
+//creating the Prompt menu for the browser. This will allow the user to see and select the
+//options on the menu. 
+
 class Menu{
     constructor(){
-        this.Character = [];
+        this.Characters = [];
         this.selectedCharacter = null;
+        this.CastMember = [];
+        this.selectedCastMember = null;
     }
+
     start(){
         let selection = this.showMainMenuOptions();
+
         while (selection != 0) {
             switch (selection) {
                 case "1":
@@ -74,6 +79,7 @@ class Menu{
         }
         alert("Goodbye!");
     }
+
 showMainMenuOptions(){
     return prompt(`
         0) exit
@@ -87,36 +93,42 @@ showMainMenuOptions(){
     showCharacterMenuOptions(characterinfo){
         return prompt(`
         0) back
-        1) create castmember
+        1) assign castmember
         2) delete castmember
         ------------------
         ${characterinfo}
         `);
     }
 
+    //Here are the actions that will run once a selection has been
+    //made on the main menu.
+
     displayCharacter(){
         let characterString = " ";
-        for (let i=0; i < this.Character.length; i++){
-            characterString += i + ") " + this.Character[i].name + "\n";
+        for (let i=0; i < this.Characters.length; i++){
+            characterString += i + ") " + this.Characters[i].fullname + "\n";
         }
         alert(characterString);
     }
-    createCharacter(){
-        let fullname = prompt("Enter name for new Character");
-        let occupation = prompt("Enter occupation of Character");
-        let weakness = prompt("Enter weakness of new Character");
-        this.Character.push(new Character(fullname, occupation, weakness));
+    
+    createCharacter() {
+         let fullname = prompt("Enter name for new Character");
+         let occupation = prompt("Enter occupation of Character");
+        this.Characters.push(new Character(fullname, occupation));
     }
+
     viewCharacter(){
         let index = prompt("Enter the index of the Character you wish to view");
-        if (index > -1 && index < this.Character.length){
-            this.selectedCharacter = this.Character[index];
-            let description = "Character Name: " + this.selectedCharacter.fullname + "\n";
+        if (index > -1 && index < this.Characters.length){
+            this.selectedCharacter = this.Characters[index];
+            let description = `Character: ${this.selectedCharacter.fullname}, 
+        Occupation: ${this.selectedCharacter.occupation}, 
+            `;
 
             for(let i =0; i < this.selectedCharacter.castmembers.length; i++){
-                description += i + ") " + this.selectedCharacter.castmembers[i].name 
-                + " - " + this.selectedCharacter.castmembers[i].position + "\n";
+                description +="Cast Member:" + " " + this.selectedCharacter.castmembers[i].name + "\n";
             }
+
             let selection = this.showCharacterMenuOptions(description);
             switch(selection){
                 case "1":
@@ -127,15 +139,32 @@ showMainMenuOptions(){
             }
         }
     }
-    createCastMember(){
-        let name = prompt("Enter name for new Cast Member");
-        let sex = prompt("Enter sex of new Cast Member");
-        this.selectedCharacter.castmembers.push(new CastMember(name, sex));
-    }
-    deleteCastMember(){
-
+    
+         deleteCharacter(){
+             let index = prompt("Enter the index of the Character you wish to delete:");
+             if (index > -1 && index < this.Characters.length) {
+            this.Characters.splice(index, 1);
+            }
+            return(this.showMainMenuOptions);
+         }
+        
+         createCastMember(){
+              let name = prompt("Enter the name of the Cast Member");
+              let sex = prompt("Enter sex of cast member");
+              this.selectedCharacter.castmembers.push(new CastMember(name, sex));
+            }
+    
+         deleteCastMember(){
+            let index = prompt("Enter the Index of the cast member you wish to delete.");
+             if (index > -1 && index < this.selectedCharacter.castmembers.length){
+            this.selectedCharacter.castmembers.splice(index, 1);
+        }
+        return(this.showMainMenuOptions);
     }
 }
 
+
+
 let menu = new Menu();
 menu.start();
+
